@@ -1,0 +1,2524 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroArena – Semiologías en Combate</title>
+    <style>
+        :root {
+            --neon-azul: #00E5FF;
+            --neon-morado: #7A00FF;
+            --neon-rosa: #FF3EB5;
+            --negro-profundo: #0A0A0A;
+            --blanco-brillante: #E6F7FF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: var(--negro-profundo);
+            color: var(--blanco-brillante);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .screen {
+            position: absolute;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            transition: opacity 0.5s;
+            background: rgba(10, 10, 10, 0.95);
+            z-index: 10;
+            padding: 40px 20px;
+            overflow-y: auto;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        #start-screen {
+            background: radial-gradient(circle at center, rgba(122, 0, 255, 0.3), var(--negro-profundo));
+        }
+        
+        .title {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            text-shadow: 0 0 20px var(--neon-azul), 0 0 40px var(--neon-azul);
+            background: linear-gradient(45deg, var(--neon-azul), var(--neon-morado));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+        
+        .subtitle {
+            font-size: 1.4rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            max-width: 700px;
+            color: var(--blanco-brillante);
+            text-shadow: 0 0 10px rgba(230, 247, 255, 0.5);
+        }
+
+        /* CONTENEDOR TEXTO + IMAGEN PROFESOR */
+        .content-with-image {
+            display: flex;
+            align-items: flex-start;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 30px 0;
+            width: 100%;
+        }
+
+        .text-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .professor-container {
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .professor-image {
+            width: 220px;
+            height: 220px;
+            border-radius: 20px;
+            border: 3px solid var(--neon-azul);
+            box-shadow: 0 0 30px var(--neon-azul);
+            background: linear-gradient(45deg, var(--neon-morado), var(--neon-rosa));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--blanco-brillante);
+            font-size: 1.1rem;
+            text-align: center;
+            padding: 15px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .educational-info {
+            background: rgba(230, 247, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 25px 0;
+            width: 100%;
+            text-align: center;
+            border: 2px solid var(--neon-azul);
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .educational-info h3 {
+            color: var(--neon-azul);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            text-shadow: 0 0 15px var(--neon-azul);
+        }
+
+        .educational-info p {
+            line-height: 1.7;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.3rem;
+            background: linear-gradient(45deg, var(--neon-azul), var(--neon-morado));
+            border: none;
+            border-radius: 50px;
+            color: var(--negro-profundo);
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.5);
+            margin: 15px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 35px rgba(0, 229, 255, 0.8);
+            background: linear-gradient(45deg, var(--neon-morado), var(--neon-rosa));
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        #hero-select-screen {
+            background: radial-gradient(circle at center, rgba(255, 62, 181, 0.2), var(--negro-profundo));
+            justify-content: flex-start;
+            padding-top: 60px;
+        }
+        
+        .hero-options {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin: 40px 0;
+            max-width: 1300px;
+            width: 100%;
+            padding-bottom: 60px;
+        }
+        
+        .hero-card {
+            width: 350px;
+            padding: 25px;
+            border-radius: 20px;
+            background: rgba(230, 247, 255, 0.08);
+            backdrop-filter: blur(15px);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--neon-azul), var(--neon-morado), var(--neon-rosa), var(--neon-azul));
+            background-size: 400% 400%;
+            border-radius: 20px;
+            z-index: -1;
+            animation: gradientShift 3s ease infinite;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .hero-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 229, 255, 0.4);
+        }
+
+        .hero-card:hover::before {
+            opacity: 1;
+        }
+        
+        .hero-card.selected {
+            border-color: var(--neon-azul);
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.6);
+        }
+
+        .hero-card.selected::before {
+            opacity: 1;
+        }
+        
+        .hero-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            border: 3px solid var(--neon-azul);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            background: rgba(0, 229, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+        }
+
+        .hero-image {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            border: 3px solid var(--neon-azul);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.4);
+            background-color: rgba(0, 229, 255, 0.1);
+        }
+        
+        .hero-name {
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+            color: var(--neon-azul);
+            text-shadow: 0 0 15px var(--neon-azul);
+            font-weight: 700;
+        }
+        
+        .hero-desc {
+            font-size: 1rem;
+            color: var(--blanco-brillante);
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .brain-function {
+            background: rgba(122, 0, 255, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 0.95rem;
+            border-left: 4px solid var(--neon-morado);
+            text-align: left;
+        }
+        
+        .abilities {
+            text-align: left;
+            margin-top: 15px;
+        }
+        
+        .ability {
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            color: var(--blanco-brillante);
+            padding-left: 12px;
+            border-left: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .ability:hover {
+            border-left-color: var(--neon-rosa);
+            background: rgba(255, 62, 181, 0.1);
+            transform: translateX(5px);
+        }
+        
+        #game-screen {
+            background: var(--negro-profundo);
+            z-index: 1;
+            justify-content: flex-start;
+            padding-top: 20px;
+            overflow: hidden;
+        }
+        
+        .game-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        #game-container {
+            position: relative;
+            width: 900px;
+            height: 650px;
+            margin: 0 auto;
+            overflow: hidden;
+            border: 4px solid var(--neon-azul);
+            border-radius: 15px;
+            box-shadow: 0 0 50px rgba(0, 229, 255, 0.6);
+            background: var(--negro-profundo);
+        }
+        
+        #game-canvas {
+            background: var(--negro-profundo);
+            width: 100%;
+            height: 100%;
+        }
+        
+        #hud {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            background: rgba(10, 10, 10, 0.9);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 2px solid var(--neon-azul);
+            backdrop-filter: blur(10px);
+        }
+        
+        .health-bar {
+            width: 250px;
+            height: 25px;
+            background: rgba(230, 247, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            border: 2px solid var(--neon-azul);
+        }
+        
+        .health-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-rosa), var(--neon-azul));
+            width: 100%;
+            transition: width 0.3s;
+            box-shadow: 0 0 10px var(--neon-azul);
+        }
+        
+        .health-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 0.9rem;
+            line-height: 25px;
+            color: var(--blanco-brillante);
+            text-shadow: 1px 1px 2px var(--negro-profundo);
+            font-weight: 600;
+        }
+        
+        .skills {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .skill-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 15px;
+            background: rgba(230, 247, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid var(--neon-azul);
+            transition: all 0.2s;
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+        }
+        
+        .skill-btn:hover:not(.cooldown) {
+            background: rgba(0, 229, 255, 0.2);
+            transform: scale(1.1);
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.6);
+        }
+        
+        .skill-btn.cooldown {
+            cursor: not-allowed;
+            opacity: 0.5;
+            border-color: var(--neon-morado);
+        }
+        
+        .cooldown-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(122, 0, 255, 0.7);
+            transition: height 0.3s;
+        }
+        
+        .skill-key {
+            font-size: 0.8rem;
+            color: var(--neon-rosa);
+            margin-bottom: 3px;
+            font-weight: 700;
+            text-shadow: 0 0 5px var(--neon-rosa);
+        }
+        
+        .skill-icon {
+            font-size: 1.8rem;
+            margin-bottom: 3px;
+        }
+
+        .skill-name {
+            font-size: 0.7rem;
+            text-align: center;
+            color: var(--blanco-brillante);
+            font-weight: 600;
+        }
+        
+        .hero-info {
+            text-align: center;
+            max-width: 220px;
+            background: rgba(230, 247, 255, 0.08);
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid var(--neon-morado);
+        }
+        
+        .hero-info h3 {
+            color: var(--neon-azul);
+            margin-bottom: 8px;
+            text-shadow: 0 0 10px var(--neon-azul);
+        }
+        
+        .hero-info p {
+            font-size: 0.85rem;
+            color: var(--blanco-brillante);
+        }
+        
+        .rehab-zones {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 160px;
+            height: 180px;
+            background: rgba(10, 10, 10, 0.8);
+            border: 2px solid var(--neon-morado);
+            border-radius: 10px;
+            padding: 12px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 20px rgba(122, 0, 255, 0.4);
+        }
+        
+        .rehab-zone {
+            width: 100%;
+            height: 45px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: var(--negro-profundo);
+        }
+        
+        .rehab-zone.active {
+            border: 2px solid var(--neon-rosa);
+            box-shadow: 0 0 15px rgba(255, 62, 181, 0.6);
+        }
+        
+        .rehab-zone.safe {
+            border: 2px solid var(--neon-azul);
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.6);
+        }
+        
+        #instructions {
+            position: absolute;
+            top: 210px;
+            left: 20px;
+            width: 300px;
+            background: rgba(10, 10, 10, 0.85);
+            border: 2px solid var(--neon-rosa);
+            border-radius: 12px;
+            padding: 18px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            z-index: 5;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 25px rgba(255, 62, 181, 0.4);
+        }
+        
+        #instructions h3 {
+            color: var(--neon-rosa);
+            margin-bottom: 12px;
+            text-align: center;
+            text-shadow: 0 0 10px var(--neon-rosa);
+            font-size: 1.2rem;
+        }
+        
+        .instruction-item {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .key {
+            display: inline-block;
+            background: rgba(255, 62, 181, 0.2);
+            padding: 3px 8px;
+            border-radius: 5px;
+            margin-right: 10px;
+            font-family: monospace;
+            min-width: 25px;
+            text-align: center;
+            border: 1px solid var(--neon-rosa);
+            color: var(--neon-rosa);
+            font-weight: 600;
+        }
+
+        #educational-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 300px;
+            background: rgba(10, 10, 10, 0.9);
+            border: 2px solid var(--neon-morado);
+            border-radius: 12px;
+            padding: 18px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            max-height: 220px;
+            overflow-y: auto;
+            z-index: 5;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 25px rgba(122, 0, 255, 0.4);
+        }
+
+        #educational-panel h4 {
+            color: var(--neon-morado);
+            margin-bottom: 12px;
+            text-align: center;
+            text-shadow: 0 0 10px var(--neon-morado);
+            font-size: 1.2rem;
+        }
+
+        .enemy-info {
+            margin: 10px 0;
+            padding: 8px;
+            border-radius: 6px;
+            background: rgba(255, 62, 181, 0.1);
+            border-left: 3px solid var(--neon-rosa);
+        }
+
+        .enemy-type {
+            font-weight: bold;
+            color: var(--neon-azul);
+        }
+        
+        .debuff-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 220px;
+            background: rgba(10, 10, 10, 0.9);
+            border: 2px solid var(--neon-rosa);
+            border-radius: 12px;
+            padding: 15px;
+            z-index: 5;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 25px rgba(255, 62, 181, 0.4);
+        }
+        
+        .debuff-item {
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            padding: 5px;
+            border-radius: 5px;
+            background: rgba(255, 62, 181, 0.2);
+            border-left: 3px solid var(--neon-rosa);
+            color: var(--blanco-brillante);
+        }
+        
+        #end-screen {
+            background: radial-gradient(circle at center, rgba(0, 229, 255, 0.2), var(--negro-profundo));
+        }
+        
+        .end-title {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 30px;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+        
+        .victory {
+            color: var(--neon-azul);
+            text-shadow: 0 0 30px var(--neon-azul);
+        }
+        
+        .defeat {
+            color: var(--neon-rosa);
+            text-shadow: 0 0 30px var(--neon-rosa);
+        }
+        
+        .score {
+            font-size: 1.8rem;
+            margin-bottom: 2.5rem;
+            text-shadow: 0 0 15px var(--blanco-brillante);
+        }
+
+        .educational-tip {
+            background: rgba(230, 247, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            max-width: 700px;
+            text-align: center;
+            border: 2px solid var(--neon-morado);
+            box-shadow: 0 0 30px rgba(122, 0, 255, 0.4);
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        .damage-text {
+            position: absolute;
+            color: var(--neon-rosa);
+            font-weight: bold;
+            pointer-events: none;
+            animation: floatUp 1s forwards;
+            text-shadow: 0 0 10px var(--neon-rosa);
+        }
+        
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-40px);
+            }
+        }
+        
+        #ability-message {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 10, 10, 0.95);
+            color: var(--blanco-brillante);
+            padding: 15px 30px;
+            border-radius: 15px;
+            border: 2px solid var(--neon-azul);
+            z-index: 100;
+            text-align: center;
+            font-size: 1.1rem;
+            pointer-events: none;
+            display: none;
+            max-width: 500px;
+            width: auto;
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.6);
+            backdrop-filter: blur(10px);
+        }
+
+        .science-fact {
+            background: rgba(122, 0, 255, 0.2);
+            border-left: 4px solid var(--neon-morado);
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 0 10px 10px 0;
+            font-size: 1rem;
+        }
+
+        .rehab-effect {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0.6;
+        }
+
+        /* Estilos para imágenes de semiologías */
+        .semiology-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid;
+            background-size: cover;
+            background-position: center;
+            display: inline-block;
+            margin-right: 8px;
+            vertical-align: middle;
+            box-shadow: 0 0 10px;
+        }
+        
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 1200px) {
+            .content-with-image {
+                max-width: 95%;
+                gap: 30px;
+            }
+            
+            .professor-image {
+                width: 180px;
+                height: 180px;
+            }
+            
+            .hero-options {
+                max-width: 95%;
+            }
+        }
+        
+        @media (max-width: 950px) {
+            #game-container {
+                width: 95vw;
+                height: 70vh;
+            }
+            
+            .title {
+                font-size: 2.8rem;
+            }
+            
+            .hero-options {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .content-with-image {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+
+            .professor-image {
+                width: 150px;
+                height: 150px;
+                order: -1;
+            }
+            
+            .hero-card {
+                width: 320px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2.2rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+                max-width: 90%;
+            }
+            
+            .content-with-image {
+                flex-direction: column;
+            }
+            
+            .professor-image {
+                width: 120px;
+                height: 120px;
+                font-size: 0.9rem;
+            }
+            
+            .educational-info {
+                padding: 20px;
+                margin: 15px 0;
+            }
+            
+            .btn {
+                padding: 12px 30px;
+                font-size: 1.1rem;
+            }
+            
+            #game-container {
+                height: 60vh;
+            }
+            
+            .hero-image {
+                width: 100px;
+                height: 100px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .title {
+                font-size: 1.8rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .professor-image {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .hero-card {
+                width: 280px;
+                padding: 20px;
+            }
+            
+            .content-with-image {
+                gap: 15px;
+            }
+        }
+        /* Controles de audio */
+.audio-controls {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: rgba(10, 10, 10, 0.9);
+    border: 2px solid var(--neon-morado);
+    border-radius: 50px;
+    padding: 10px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 20px rgba(122, 0, 255, 0.6);
+}
+
+.audio-btn {
+    background: transparent;
+    border: none;
+    color: var(--neon-azul);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.audio-btn:hover {
+    color: var(--neon-rosa);
+    transform: scale(1.1);
+    text-shadow: 0 0 10px var(--neon-rosa);
+}
+
+        /* Efectos de partículas de fondo */
+        .background-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle-bg {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--neon-azul), transparent);
+            opacity: 0.1;
+            animation: floatParticle 20s infinite linear;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(0) translateX(0);
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Audio de fondo -->
+<audio id="background-music" loop>
+    <source src="assets/audio/geometri.mp3" type="audio/mpeg">
+    <source src="assets/audio/background-music.ogg" type="audio/ogg">
+    Tu navegador no soporta el elemento de audio.
+</audio>
+
+<!-- Efectos de sonido -->
+<audio id="skill-sound" preload="auto">
+    <source src="assets/audio/skill-effect.mp3" type="audio/mpeg">
+</audio>
+<audio id="damage-sound" preload="auto">
+    <source src="assets/audio/damage-effect.mp3" type="audio/mpeg">
+</audio>
+<audio id="victory-sound" preload="auto">
+    <source src="assets/audio/victory-effect.mp3" type="audio/mpeg">
+</audio>
+    <!-- Partículas de fondo -->
+    <div class="background-particles" id="background-particles"></div>
+
+    <!-- Controles de audio -->
+<div class="audio-controls">
+    <button id="music-toggle" class="audio-btn">🎵</button>
+    <button id="sound-toggle" class="audio-btn">🔊</button>
+</div>
+
+    <!-- PANTALLA DE INICIO -->
+    <div id="start-screen" class="screen">
+        <h1 class="title">NEUROARENA</h1>
+        <p class="subtitle">SEMIOLOGÍAS EN COMBATE</p>
+        
+        <div class="content-with-image">
+            <div class="text-content">
+                <div class="educational-info">
+                    <h3>🎮 APRENDE NEUROCIENCIA JUGANDO</h3>
+                    <p>En <strong style="color: var(--neon-azul)">NEUROARENA</strong>, controlas diferentes regiones del cerebro para reconocer, enfrentar y compensar sus propias semiologías.</p>
+                    <p>Cada área cerebral cuenta con mecanismos reales de funcionamiento —como integración sensorial, modulación emocional y control motor— que te permiten responder a las señales clínicas que aparecen durante la batalla.</p>
+                    <div class="science-fact">
+                        💡 <strong>Dato científico:</strong> Las semiologías son manifestaciones clínicas que ayudan a identificar qué región cerebral está comprometida. Cada una revela funciones específicas como coordinación (cerebelo), regulación emocional (sistema límbico) y procesos cognitivos superiores (lóbulos).
+                    </div>
+                    <p>¡Explora el cerebro, identifica sus semiologías y utiliza las funciones reales de cada región para superar cada desafío!</p>
+                </div>
+            </div>
+            <div class="professor-container">
+                <div class="professor-image" id="professor-image-start" style="background-image: url('assets/profesor/profesor1.jpg')">
+                    <!-- Imagen del profesor - se puede cambiar la URL -->
+                    <br>
+                </div>
+            </div>
+        </div>
+        
+        <button id="start-btn" class="btn">INICIAR SIMULACIÓN</button>
+    </div>
+    
+    <!-- PANTALLA DE SELECCIÓN DE HÉROE -->
+    <div id="hero-select-screen" class="screen hidden">
+        <h2>SELECCIONA TU REGIÓN CEREBRAL</h2>
+        <p style="margin-bottom: 30px; text-align: center; max-width: 900px; font-size: 1.2rem;">Cada región cerebral utiliza sus funciones y circuitos propios para enfrentar las semiologías características que aparecen durante el desafío.</p>
+        
+        <div class="content-with-image">
+            <div class="text-content">
+                <div class="educational-info">
+                    <h3>🧠 ELIGE TU ESTRATEGIA</h3>
+                    <p>Cada región cerebral tiene fortalezas únicas y mecanismos propios de funcionamiento que le permiten responder a sus semiologías características.</p>
+                    <div class="science-fact">
+                        🎯 <strong>Consejo:</strong> Selecciona la región que mejor se adapte a tu estilo de juego y descubre cómo funcionan realmente sus circuitos y procesos.
+                    </div>
+                </div>
+            </div>
+            <div class="professor-container">
+                <div class="professor-image" id="professor-image-select" style="background-image: url('assets/profesor/profesor1c.jpg')">
+                    <!-- Imagen del profesor - se puede cambiar la URL -->
+                    <br>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hero-options">
+            <div class="hero-card" data-hero="cerebelo">
+                <div class="hero-image" id="cerebelo-image" style="background-image: url('assets/heroes/cerebelo.png')">
+                    <!-- Imagen del Cerebelo -->
+                </div>
+                <h3 class="hero-name">CEREBELO</h3>
+                <p class="hero-desc">Coordinación motora y equilibrio</p>
+                
+                <div class="brain-function">
+                    <strong>Función Real:</strong> Controla el equilibrio, la postura y la coordinación de movimientos precisos.
+                </div>
+                
+                <div class="abilities">
+                    <div class="ability">• <strong style="color: var(--neon-azul)">Reajuste Propioceptivo</strong> [1] – Responde a la presencia de ataxia y dismetría.</div>
+                    <div class="ability">• <strong style="color: var(--neon-azul)">Corrección Visuomotora</strong> [2] – Maneja dificultades como la disdiadococinesia.</div>
+                    <div class="ability">• <strong style="color: var(--neon-azul)">Feedback Sensorial</strong> [3] – Enfrenta manifestaciones como el temblor intencional.</div>
+                </div>
+            </div>
+            
+            <div class="hero-card" data-hero="limbico">
+                <div class="hero-image" id="limbico-image" style="background-image: url('assets/heroes/limbico.png')">
+                    <!-- Imagen del Sistema Límbico -->
+                </div>
+                <h3 class="hero-name">SISTEMA LÍMBICO</h3>
+                <p class="hero-desc">Regulación emocional y memoria</p>
+                
+                <div class="brain-function">
+                    <strong>Función Real:</strong> Gestiona emociones, memoria afectiva y respuestas fisiológicas al estrés.
+                </div>
+                
+                <div class="abilities">
+                    <div class="ability">• <strong style="color: var(--neon-rosa)">Respiración Diafragmática</strong> [1] – Responde a manifestaciones como ansiedad elevada o euforia.</div>
+                    <div class="ability">• <strong style="color: var(--neon-rosa)">Homeostasis Emocional</strong> [2] – Maneja fluctuaciones intensas del estado emocional.</div>
+                    <div class="ability">• <strong style="color: var(--neon-rosa)">Memoria Afectiva</strong> [3] – Enfrenta experiencias como despersonalización o desrealización.</div>
+                </div>
+            </div>
+            
+            <div class="hero-card" data-hero="lobulos">
+                <div class="hero-image" id="lobulos-image" style="background-image: url('assets/heroes/lobulos.png')">
+                    <!-- Imagen de los Lóbulos Cerebrales -->
+                </div>
+                <h3 class="hero-name">LÓBULOS CEREBRALES</h3>
+                <p class="hero-desc">Funciones ejecutivas y cognitivas</p>
+                
+                <div class="brain-function">
+                    <strong>Función Real:</strong> Procesan información sensorial, razonamiento, lenguaje, funciones ejecutivas y organización del comportamiento.
+                </div>
+                
+                <div class="abilities">
+                    <div class="ability">• <strong style="color: var(--neon-morado)">Planificación Cognitiva</strong> [1] – Responde a manifestaciones como apraxias o dificultades en la ejecución de acciones.</div>
+                    <div class="ability">• <strong style="color: var(--neon-morado)">Reorganización Funcional</strong> [2] – Maneja semiologías relacionadas con déficits ejecutivos (iniciativa, organización, secuenciación).</div>
+                    <div class="ability">• <strong style="color: var(--neon-morado)">Foco Atencional Frontal-Parietal</strong> [3] – Enfrenta signos como la negligencia espacial.</div>
+                </div>
+            </div>
+        </div>
+        
+        <button id="select-btn" class="btn">CONFIRMAR SELECCIÓN</button>
+    </div>
+    
+    <!-- PANTALLA DE JUEGO -->
+    <div id="game-screen" class="screen hidden">
+        <div class="game-wrapper">
+            <div id="game-container">
+                <canvas id="game-canvas"></canvas>
+                
+                <!-- ZONAS DE REHABILITACIÓN -->
+                <div class="rehab-zones">
+                    <div class="rehab-zone" id="zone-motora" style="background: linear-gradient(45deg, var(--neon-azul), var(--neon-morado));">ZONA MOTORA</div>
+                    <div class="rehab-zone" id="zone-cognitiva" style="background: linear-gradient(45deg, var(--neon-morado), var(--neon-rosa));">ZONA COGNITIVA</div>
+                    <div class="rehab-zone" id="zone-emocional" style="background: linear-gradient(45deg, var(--neon-rosa), var(--neon-azul));">ZONA EMOCIONAL</div>
+                </div>
+                
+                <!-- SEMIOLOGÍAS ACTIVAS -->
+                <div class="debuff-display">
+                    <h4>SEMIOLOGÍAS ACTIVAS</h4>
+                    <div id="debuff-list">
+                        <!-- Se llena dinámicamente -->
+                    </div>
+                </div>
+                
+                <div id="hud">
+                    <div class="health-bar">
+                        <div class="health-fill" id="player-health"></div>
+                        <div class="health-text" id="health-text">SALUD CEREBRAL: 100%</div>
+                    </div>
+                    
+                    <div class="skills">
+                        <div class="skill-btn" id="skill-1" data-key="1">
+                            <div class="skill-key">1</div>
+                            <div class="skill-icon">🛡️</div>
+                            <div class="skill-name">DEFENSA</div>
+                        </div>
+                        <div class="skill-btn" id="skill-2" data-key="2">
+                            <div class="skill-key">2</div>
+                            <div class="skill-icon">⚡</div>
+                            <div class="skill-name">VELOCIDAD</div>
+                        </div>
+                        <div class="skill-btn" id="skill-3" data-key="3">
+                            <div class="skill-key">3</div>
+                            <div class="skill-icon">🌀</div>
+                            <div class="skill-name">ENERGÍA</div>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-info">
+                        <h3 id="current-hero-name">CEREBELO</h3>
+                        <p id="current-hero-desc">SISTEMA ACTIVO</p>
+                        <div id="hero-educational">
+                            SEMIOLOGÍAS NEUTRALIZADAS: <span style="color: var(--neon-azul)">0/8</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="ability-message"></div>
+        </div>
+        
+        <div id="instructions">
+            <h3>🎮 CONTROLES</h3>
+            <div class="instruction-item">
+                <span class="key">WASD</span> Movimiento
+            </div>
+            <div class="instruction-item">
+                <span class="key">1</span> Mecanismo Primario
+            </div>
+            <div class="instruction-item">
+                <span class="key">2</span> Mecanismo Secundario
+            </div>
+            <div class="instruction-item">
+                <span class="key">3</span> Mecanismo Terciario
+            </div>
+            <div class="instruction-item">
+                <span class="key">CLICK</span> Zonas de Rehab
+            </div>
+        </div>
+
+        <div id="educational-panel">
+            <h4 id="educational-title">🧠 MECANISMOS ACTIVOS</h4>
+            <div id="enemies-list">
+                <!-- Se llenará dinámicamente -->
+            </div>
+            <div class="science-fact" id="game-objective">
+                <strong>OBJETIVO:</strong> Neutraliza 8 semiologías diferentes usando los mecanismos compensatorios correctos.
+            </div>
+        </div>
+    </div>
+    
+    <!-- PANTALLA DE FINAL -->
+    <div id="end-screen" class="screen hidden">
+        <h2 class="end-title" id="end-title">¡MISIÓN COMPLETADA!</h2>
+        <p class="score" id="score-text">EFICIENCIA NEURAL: 100%</p>
+        
+        <div class="educational-tip">
+            <h4 id="end-achievement-title">🎓 LOGRO DE APRENDIZAJE</h4>
+            <p id="educational-summary">Has demostrado competencia en los mecanismos compensatorios cerebrales.</p>
+            <div class="science-fact" id="end-reminder">
+                <strong>RECORDATORIO:</strong> La neuroplasticidad permite al cerebro reorganizarse y compensar déficits mediante los mecanismos que has utilizado.
+            </div>
+        </div>
+        
+        <button id="restart-btn" class="btn">NUEVA SIMULACIÓN</button>
+    </div>
+
+    <script>
+        // =============================================
+        // CONFIGURACIÓN INICIAL Y VARIABLES GLOBALES
+        // =============================================
+        
+        const startScreen = document.getElementById('start-screen');
+        const heroSelectScreen = document.getElementById('hero-select-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const endScreen = document.getElementById('end-screen');
+        const startBtn = document.getElementById('start-btn');
+        const selectBtn = document.getElementById('select-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const gameCanvas = document.getElementById('game-canvas');
+        const ctx = gameCanvas.getContext('2d');
+        const educationalSummary = document.getElementById('educational-summary');
+        const heroEducational = document.getElementById('hero-educational');
+        const enemiesList = document.getElementById('enemies-list');
+        const debuffList = document.getElementById('debuff-list');
+        const backgroundParticles = document.getElementById('background-particles');
+        const educationalTitle = document.getElementById('educational-title');
+        const gameObjective = document.getElementById('game-objective');
+        const endAchievementTitle = document.getElementById('end-achievement-title');
+        const endReminder = document.getElementById('end-reminder');
+        const currentHeroDesc = document.getElementById('current-hero-desc');
+        
+        let gameRunning = false;
+        let selectedHero = null;
+        let player = null;
+        let semiologies = [];
+        let particles = [];
+        let rehabEffects = [];
+        let score = 0;
+        let keys = {};
+        let neutralizedSemiologies = new Set();
+        const VICTORY_CONDITION = 8;
+        
+        gameCanvas.width = 900;
+        gameCanvas.height = 650;
+
+        // =============================================
+        // SISTEMA DE SEMIOLOGÍAS ESPECÍFICAS POR REGIÓN
+        // =============================================
+
+        const semiologiesConfig = {
+            'cerebelo': {
+                title: '🧠 MECANISMOS DE COMPENSACIÓN MOTORA',
+                semiologies: {
+                    'ataxia': { 
+                        color: '#FF3EB5', effect: 'reduceSpeed', value: 0.5, duration: 450,
+                        name: 'ATAXIA', desc: 'Pérdida de coordinación → Velocidad -50%',
+                        compensation: 'Reajuste Propioceptivo',
+                        damage: 8
+                    },
+                    'disdiadococinesia': { 
+                        color: '#00E5FF', effect: 'reduceCooldownRecovery', value: 0.3, duration: 400,
+                        name: 'DISDIADOCOCINESIA', desc: 'Dificultad en movimientos alternantes → Cooldowns +30%',
+                        compensation: 'Corrección Visuomotora',
+                        damage: 6
+                    },
+                    'dismetria': { 
+                        color: '#7A00FF', effect: 'reduceEffectiveness', value: 0.4, duration: 420,
+                        name: 'DISMETRÍA', desc: 'Error en medir la distancia del movimiento → Efectividad -40%',
+                        compensation: 'Reajuste Propioceptivo',
+                        damage: 7
+                    },
+                    'temblor_intencional': { 
+                        color: '#FF3EB5', effect: 'reducePrecision', value: 0.6, duration: 480,
+                        name: 'TEMBLOR INTENCIONAL', desc: 'Aumenta al iniciar movimientos → Precisión -60%',
+                        compensation: 'Feedback Sensorial',
+                        damage: 9
+                    },
+                    'marcha_atavica': { 
+                        color: '#00E5FF', effect: 'reduceSpeed', value: 0.7, duration: 500,
+                        name: 'MARCHA ATÁXICA', desc: 'Marcha inestable y descoordinada → Velocidad -70%',
+                        compensation: 'Reajuste Propioceptivo',
+                        damage: 10
+                    },
+                    'hipotonia': { 
+                        color: '#7A00FF', effect: 'reduceEffectiveness', value: 0.5, duration: 450,
+                        name: 'HIPOTONÍA', desc: 'Disminución del tono muscular → Efectividad -50%',
+                        compensation: 'Feedback Sensorial',
+                        damage: 6
+                    },
+                    'nistagmo': { 
+                        color: '#FF3EB5', effect: 'reducePrecision', value: 0.8, duration: 420,
+                        name: 'NISTAGMO', desc: 'Movimientos oculares involuntarios → Precisión -80%',
+                        compensation: 'Corrección Visuomotora',
+                        damage: 8
+                    },
+                    'disartria': { 
+                        color: '#00E5FF', effect: 'reduceCooldownRecovery', value: 0.6, duration: 480,
+                        name: 'DISARTRIA', desc: 'Alteración en la coordinación del habla → Cooldowns +60%',
+                        compensation: 'Feedback Sensorial',
+                        damage: 7
+                    }
+                },
+                compensations: {
+                    '1': { name: 'REAJUSTE PROPIOCEPTIVO', cooldown: 180, effect: 'neutralizeMotor' },
+                    '2': { name: 'CORRECCIÓN VISUOMOTORA', cooldown: 150, effect: 'neutralizeCoordination' },
+                    '3': { name: 'FEEDBACK SENSORIAL', cooldown: 210, effect: 'neutralizeTremor' }
+                }
+            },
+            'limbico': {
+                title: '💓 MECANISMOS DE REGULACIÓN EMOCIONAL',
+                semiologies: {
+                    'alteraciones_memoria': { 
+                        color: '#FF3EB5', effect: 'reduceEffectiveness', value: 0.5, duration: 450,
+                        name: 'ALTERACIÓN DE LA MEMORIA', desc: 'Problemas de memoria → Efectividad -50%',
+                        compensation: 'Memoria Afectiva',
+                        damage: 8
+                    },
+                    'cambios_emocionales': { 
+                        color: '#00E5FF', effect: 'reducePrecision', value: 0.6, duration: 420,
+                        name: 'CAMBIOS EMOCIONALES', desc: 'Inestabilidad → Precisión -60%',
+                        compensation: 'Homeostasis Emocional',
+                        damage: 9
+                    },
+                    'conducta_agresiva': { 
+                        color: '#7A00FF', effect: 'reduceCooldownRecovery', value: 0.7, duration: 480,
+                        name: 'CONDUCTA AGRESIVA', desc: 'Impulsividad → Cooldowns +70%',
+                        compensation: 'Respiración Diafragmática',
+                        damage: 12
+                    },
+                    'reconocimiento_emocional': { 
+                        color: '#FF3EB5', effect: 'reduceEffectiveness', value: 0.4, duration: 400,
+                        name: 'RECONOCIMIENTO EMOCIONAL', desc: 'Déficit → Efectividad -40%',
+                        compensation: 'Homeostasis Emocional',
+                        damage: 6
+                    },
+                    'despersonalizacion': { 
+                        color: '#00E5FF', effect: 'reduceSpeed', value: 0.8, duration: 500,
+                        name: 'DESPERSONALIZACIÓN', desc: 'Desconexión → Velocidad -80%',
+                        compensation: 'Memoria Afectiva',
+                        damage: 10
+                    },
+                    'trastornos_apetito': { 
+                        color: '#7A00FF', effect: 'reduceCooldownRecovery', value: 0.5, duration: 450,
+                        name: 'ALTERACIÓN DEL APETITO', desc: 'Disminución de motivación → Cooldowns +50%',
+                        compensation: 'Homeostasis Emocional',
+                        damage: 7
+                    },
+                    'alucinaciones_olfatorias': { 
+                        color: '#FF3EB5', effect: 'reducePrecision', value: 0.7, duration: 430,
+                        name: 'ALUCINACIONES OLFATORIAS', desc: 'Percepción distorsionada → Precisión -70%',
+                        compensation: 'Respiración Diafragmática',
+                        damage: 9
+                    },
+                    'amnesia': { 
+                        color: '#00E5FF', effect: 'reduceEffectiveness', value: 0.9, duration: 550,
+                        name: 'AMNESIA', desc: 'Pérdida significativa de memoria → Efectividad -90%',
+                        compensation: 'Memoria Afectiva',
+                        damage: 15
+                    }
+                },
+                compensations: {
+                    '1': { name: 'RESPIRACIÓN DIAFRAGMÁTICA', cooldown: 160, effect: 'neutralizeAnxiety' },
+                    '2': { name: 'HOMEOSTASIS EMOCIONAL', cooldown: 180, effect: 'neutralizeEmotional' },
+                    '3': { name: 'MEMORIA AFECTIVA', cooldown: 200, effect: 'neutralizeMemory' }
+                }
+            },
+            'lobulos': {
+                title: '👁️ MECANISMOS DE REORGANIZACIÓN CORTICAL',
+                semiologies: {
+                    'afasia_broca': { 
+                        color: '#FF3EB5', effect: 'reduceCooldownRecovery', value: 0.6, duration: 480,
+                        name: 'AFASIA DE BROCA', desc: 'Lenguaje producción → Cooldowns +60%',
+                        compensation: 'Planificación Cognitiva',
+                        damage: 8
+                    },
+                    'apraxia': { 
+                        color: '#00E5FF', effect: 'reduceEffectiveness', value: 0.7, duration: 450,
+                        name: 'APRAXIA', desc: 'Acciones aprendidas → Efectividad -70%',
+                        compensation: 'Planificación Cognitiva',
+                        damage: 10
+                    },
+                    'cambios_personalidad': { 
+                        color: '#7A00FF', effect: 'reducePrecision', value: 0.5, duration: 420,
+                        name: 'CAMBIOS DE PERSONALIDAD', desc: 'Impulsividad → Precisión -50%',
+                        compensation: 'Foco Atencional Frontal-Parietal',
+                        damage: 9
+                    },
+                    'deficits_ejecutivos': { 
+                        color: '#FF3EB5', effect: 'reduceSpeed', value: 0.6, duration: 500,
+                        name: 'DÉFICITS EJECUTIVOS', desc: 'Planificación → Velocidad -60%',
+                        compensation: 'Reorganización Funcional',
+                        damage: 7
+                    },
+                    'hemiplejia': { 
+                        color: '#00E5FF', effect: 'reduceEffectiveness', value: 0.8, duration: 530,
+                        name: 'HEMIPLEJÍA', desc: 'Movimiento afectado → Efectividad -80%',
+                        compensation: 'Reorganización Funcional',
+                        damage: 12
+                    },
+                    'agnosia': { 
+                        color: '#7A00FF', effect: 'reducePrecision', value: 0.7, duration: 430,
+                        name: 'AGNOSIA', desc: 'Reconocimiento → Precisión -70%',
+                        compensation: 'Foco Atencional Frontal-Parietal',
+                        damage: 8
+                    },
+                    'negligencia_espacial': { 
+                        color: '#FF3EB5', effect: 'reduceSpeed', value: 0.9, duration: 510,
+                        name: 'NEGLIGENCIA ESPACIAL', desc: 'Atención espacial → Velocidad -90%',
+                        compensation: 'Planificación Cognitiva',
+                        damage: 11
+                    },
+                    'afasia_wernicke': { 
+                        color: '#00E5FF', effect: 'reduceCooldownRecovery', value: 0.8, duration: 500,
+                        name: 'AFASIA DE WERNICKE', desc: 'Comprensión → Cooldowns +80%',
+                        compensation: 'Reorganización Funcional',
+                        damage: 9
+                    }
+                },
+                compensations: {
+                    '1': { name: 'PLANIFICACIÓN COGNITIVA', cooldown: 170, effect: 'neutralizeApraxia' },
+                    '2': { name: 'REORGANIZACIÓN FUNCIONAL', cooldown: 190, effect: 'neutralizeExecutive' },
+                    '3': { name: 'FOCO ATENCIONAL FRONTAL-PARIETAL', cooldown: 150, effect: 'neutralizeAttention' }
+                }
+            }
+        };
+
+        // =============================================
+        // SISTEMA DE IMÁGENES - URLs configurables
+        // =============================================
+
+        const imageAssets = {
+            // Imágenes de héroes
+            'cerebelo': 'assets/heroes/cerebelo.png',
+            'limbico': 'assets/heroes/limbico.png', 
+            'lobulos': 'assets/heroes/lobulos.png',
+            
+            // Imágenes de semiologías cerebelo
+            'ataxia': 'assets/semiologies/ataxia.png',
+            'disdiadococinesia': 'assets/semiologies/disdiadococinesia.png',
+            'dismetria': 'assets/semiologies/dismetria.png',
+            'temblor_intencional': 'assets/semiologies/temblor.png',
+            'marcha_atavica': 'assets/semiologies/marcha.png',
+            'hipotonia': 'assets/semiologies/hipotonia.png',
+            'nistagmo': 'assets/semiologies/nistagmo.png',
+            'disartria': 'assets/semiologies/disartria.png',
+            
+            // Imágenes de semiologías límbico
+            'alteraciones_memoria': 'assets/semiologies/memoria.png',
+            'cambios_emocionales': 'assets/semiologies/emociones.png',
+            'conducta_agresiva': 'assets/semiologies/agresividad.png',
+            'reconocimiento_emocional': 'assets/semiologies/reconocimiento.png',
+            'despersonalizacion': 'assets/semiologies/despersonalizacion.png',
+            'trastornos_apetito': 'assets/semiologies/apetito.png',
+            'alucinaciones_olfatorias': 'assets/semiologies/olfatorias.png',
+            'amnesia': 'assets/semiologies/amnesia.png',
+            
+            // Imágenes de semiologías lóbulos
+            'afasia_broca': 'assets/semiologies/broca.png',
+            'apraxia': 'assets/semiologies/apraxia.png',
+            'cambios_personalidad': 'assets/semiologies/personalidad.png',
+            'deficits_ejecutivos': 'assets/semiologies/ejecutivos.png',
+            'hemiplejia': 'assets/semiologies/hemiplejia.png',
+            'agnosia': 'assets/semiologies/agnosia.png',
+            'negligencia_espacial': 'assets/semiologies/negligencia.png',
+            'afasia_wernicke': 'assets/semiologies/wernicke.png',
+            
+            // Imágenes del profesor
+            'profesor_start': 'assets/profesor/profesor1.jpg',
+            'profesor_select': 'assets/profesor/profesor1c.jpg'
+        };
+
+        // =============================================
+        // CLASES PRINCIPALES
+        // =============================================
+        
+        class Player {
+            constructor(heroType) {
+                this.heroType = heroType;
+                this.x = gameCanvas.width / 2;
+                this.y = gameCanvas.height / 2;
+                this.radius = 25;
+                this.color = this.getHeroColor();
+                this.speed = 3;
+                this.baseSpeed = 3;
+                this.maxHealth = 100;
+                this.health = 100;
+                this.activeDebuffs = [];
+                this.compensations = JSON.parse(JSON.stringify(semiologiesConfig[heroType].compensations));
+                this.currentZone = null;
+                this.isInSafeZone = false;
+                
+                // Inicializar cooldowns
+                for (let key in this.compensations) {
+                    this.compensations[key].currentCooldown = 0;
+                }
+                
+                // Estadísticas afectadas por debuffs
+                this.effectiveness = 1.0;
+                this.cooldownRecovery = 1.0;
+                this.precision = 1.0;
+            }
+
+            getHeroColor() {
+                return {
+                    'cerebelo': '#00E5FF',
+                    'limbico': '#FF3EB5', 
+                    'lobulos': '#7A00FF'
+                }[this.heroType];
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = '#0A0A0A';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                const symbol = {
+                    'cerebelo': 'C',
+                    'limbico': 'L',
+                    'lobulos': 'F'
+                }[this.heroType];
+                ctx.fillText(symbol, this.x, this.y);
+                
+                // Indicador de zona segura
+                if (this.isInSafeZone) {
+                    ctx.strokeStyle = '#00E5FF';
+                    ctx.lineWidth = 3;
+                    ctx.setLineDash([5, 5]);
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius + 8, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+            }
+
+            update() {
+                this.applyDebuffEffects();
+                
+                for (let key in this.compensations) {
+                    if (this.compensations[key].currentCooldown > 0) {
+                        this.compensations[key].currentCooldown--;
+                    }
+                }
+                
+                this.detectCurrentZone();
+            }
+
+            applyDebuffEffects() {
+                this.speed = this.baseSpeed;
+                this.effectiveness = 1.0;
+                this.cooldownRecovery = 1.0;
+                this.precision = 1.0;
+
+                if (this.isInSafeZone) return;
+
+                for (let i = this.activeDebuffs.length - 1; i >= 0; i--) {
+                    const debuff = this.activeDebuffs[i];
+                    debuff.duration--;
+                    
+                    if (debuff.duration <= 0) {
+                        this.activeDebuffs.splice(i, 1);
+                        continue;
+                    }
+
+                    switch(debuff.effect) {
+                        case 'reduceSpeed':
+                            this.speed *= (1 - debuff.value);
+                            break;
+                        case 'reduceEffectiveness':
+                            this.effectiveness *= (1 - debuff.value);
+                            break;
+                        case 'reduceCooldownRecovery':
+                            this.cooldownRecovery *= (1 - debuff.value);
+                            break;
+                        case 'reducePrecision':
+                            this.precision *= (1 - debuff.value);
+                            break;
+                    }
+                }
+                
+                this.speed = Math.max(1, this.speed);
+                this.effectiveness = Math.max(0.1, this.effectiveness);
+                this.cooldownRecovery = Math.max(0.1, this.cooldownRecovery);
+                this.precision = Math.max(0.1, this.precision);
+            }
+
+            detectCurrentZone() {
+                const zones = {
+                    'motora': { x: 200, y: 300, radius: 80 },
+                    'cognitiva': { x: 450, y: 300, radius: 80 },
+                    'emocional': { x: 700, y: 300, radius: 80 }
+                };
+
+                let newZone = null;
+                let isSafe = false;
+
+                for (const [zoneName, zone] of Object.entries(zones)) {
+                    const dx = zone.x - this.x;
+                    const dy = zone.y - this.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < zone.radius) {
+                        newZone = zoneName;
+                        isSafe = true;
+                        break;
+                    }
+                }
+
+                this.isInSafeZone = isSafe;
+                
+                if (newZone !== this.currentZone) {
+                    this.currentZone = newZone;
+                    if (newZone) {
+                        createParticles(this.x, this.y, 8, this.getZoneColor(newZone));
+                        if (isSafe) {
+                            this.showZoneMessage(newZone);
+                        }
+                    }
+                }
+
+                document.querySelectorAll('.rehab-zone').forEach(zone => {
+                    zone.classList.remove('active', 'safe');
+                });
+                if (this.currentZone) {
+                    const zoneElement = document.getElementById(`zone-${this.currentZone}`);
+                    zoneElement.classList.add('active');
+                    if (this.isInSafeZone) {
+                        zoneElement.classList.add('safe');
+                    }
+                }
+            }
+
+            showZoneMessage(zone) {
+                const messages = {
+                    'cerebelo': {
+                        'motora': 'ZONA SEGURA – COORDINACIÓN NEURAL',
+                        'cognitiva': 'MOVIMIENTO A ZONA DE REHABILITACION',
+                        'emocional': 'MOVIMIENTO A ZONA DE REHABILITACIÓN'
+                    },
+                    'limbico': {
+                        'motora': 'MOVIMIENTO A ZONA DE REHABILITACIÓN', 
+                        'cognitiva': 'MOVIMIENTO A ZONA DE REHABILITACIÓN',
+                        'emocional': 'ZONA SEGURA – ESTABILIDAD EMOCIONAL'
+                    },
+                    'lobulos': {
+                        'motora': 'MOVIMIENTO A ZONA DE REHABILITACIÓN',
+                        'cognitiva': 'ZONA COGNITIVA – ESTABILIDAD ACTIVA',
+                        'emocional': 'MOVIMIENTO A ZONA DE REHABILITACIÓN'
+                    }
+                };
+                
+                const message = messages[this.heroType]?.[zone] || `¡ZONA ${zone.toUpperCase()} SEGURA!`;
+                showAbilityMessage(message);
+            }
+
+            getZoneColor(zone) {
+                return {
+                    'motora': '#00E5FF',
+                    'cognitiva': '#7A00FF',
+                    'emocional': '#FF3EB5'
+                }[zone];
+            }
+
+            addDebuff(semiology) {
+                if (this.isInSafeZone) return;
+                
+                this.activeDebuffs.push({
+                    type: semiology.type,
+                    name: semiology.config.name,
+                    effect: semiology.config.effect,
+                    value: semiology.config.value,
+                    duration: semiology.config.duration,
+                    compensation: semiology.config.compensation,
+                    damage: semiology.config.damage
+                });
+                
+                createParticles(this.x, this.y, 8, semiology.config.color);
+                showAbilityMessage(`¡${semiology.config.name} ACTIVA! - ${semiology.config.desc}`);
+                
+                // ¡AQUÍ ESTÁ EL DAÑO REAL!
+                this.takeDamage(semiology.config.damage);
+            }
+
+            useCompensation(abilityKey) {
+                const compensation = this.compensations[abilityKey];
+                
+                if (compensation.currentCooldown > 0) {
+                    showAbilityMessage(`EN COOLDOWN: ${Math.ceil(compensation.currentCooldown/60)}S`);
+                    return false;
+                }
+
+                compensation.currentCooldown = Math.max(1, Math.floor(compensation.cooldown * Math.max(0.1, this.cooldownRecovery)));
+                
+                let neutralizedCount = 0;
+                
+                // 1. Primero eliminar debuffs activos
+                for (let i = this.activeDebuffs.length - 1; i >= 0; i--) {
+                    const debuff = this.activeDebuffs[i];
+                    
+                    if (this.canCompensate(abilityKey, debuff.compensation)) {
+                        this.activeDebuffs.splice(i, 1);
+                        neutralizedCount++;
+                        neutralizedSemiologies.add(debuff.type);
+                        score += 15;
+                        
+                        createParticles(this.x, this.y, 12, '#00E5FF');
+                    }
+                }
+                
+                // 2. ¡MEJORA CRÍTICA! Hacer daño progresivo a semiologías que coincidan
+                let damageDealt = 0;
+                for (let i = semiologies.length - 1; i >= 0; i--) {
+                    const semiology = semiologies[i];
+                    const semiologyConfig = semiologiesConfig[this.heroType].semiologies[semiology.type];
+                    
+                    if (semiologyConfig && this.canCompensate(abilityKey, semiologyConfig.compensation)) {
+                        // Hacer daño progresivo en lugar de eliminar inmediatamente
+                        const damageAmount = 8 + Math.floor(Math.random() * 5); // 8-12 de daño
+                        const wasEliminated = semiology.takeDamage(damageAmount);
+                        damageDealt += damageAmount;
+                        
+                        if (wasEliminated) {
+                            // Solo eliminar si la salud llega a 0
+                            semiologies.splice(i, 1);
+                            neutralizedCount++;
+                            neutralizedSemiologies.add(semiology.type);
+                            score += 20;
+                            
+                            // Efectos visuales de eliminación
+                            createParticles(semiology.x, semiology.y, 15, '#00FF00');
+                            showAbilityMessage(`¡${semiologyConfig.name} NEUTRALIZADA!`);
+                        } else {
+                            // Efectos visuales de daño
+                            createParticles(semiology.x, semiology.y, 8, '#FFFF00');
+                            showAbilityMessage(`¡${semiologyConfig.name} DAÑADA! -${damageAmount}HP`);
+                        }
+                    }
+                }
+
+                if (neutralizedCount > 0) {
+                    showAbilityMessage(`¡${compensation.name} NEUTRALIZÓ ${neutralizedCount} SEMIOLOGÍAS!`);
+                    
+                    // Verificar victoria después de cada eliminación
+                    if (neutralizedSemiologies.size >= VICTORY_CONDITION) {
+                        setTimeout(() => endGame(true), 500);
+                    }
+                } else if (damageDealt > 0) {
+                    showAbilityMessage(`¡${compensation.name} INFLIGIÓ ${damageDealt} DE DAÑO!`);
+                } else {
+                    showAbilityMessage(`${compensation.name} ACTIVO - PREVENCIÓN ACTIVA`);
+                }
+
+                return true;
+            }
+
+            canCompensate(abilityKey, requiredCompensation) {
+                const compensationMap = {
+                    'cerebelo': {
+                        '1': ['Reajuste Propioceptivo'],
+                        '2': ['Corrección Visuomotora'],
+                        '3': ['Feedback Sensorial']
+                    },
+                    'limbico': {
+                        '1': ['Respiración Diafragmática'],
+                        '2': ['Homeostasis Emocional'],
+                        '3': ['Memoria Afectiva']
+                    },
+                    'lobulos': {
+                        '1': ['Planificación Cognitiva'],
+                        '2': ['Reorganización Funcional', 'Foco Atencional Frontal-Parietal'], // ✅ CORRECCIÓN: Agregar ambas compensaciones
+                        '3': ['Foco Atencional Frontal-Parietal', 'Reorganización Funcional']  // ✅ CORRECCIÓN: Agregar ambas compensaciones
+                    }
+                };
+                
+                // ✅ AGREGAR VALIDACIÓN DE SEGURIDAD
+                if (!this.heroType || !compensationMap[this.heroType]) {
+                    console.error('Hero type not found:', this.heroType);
+                    return false;
+                }
+                
+                const compensations = compensationMap[this.heroType][abilityKey];
+                return compensations ? compensations.includes(requiredCompensation) : false;
+            }
+
+            takeDamage(amount) {
+                if (this.isInSafeZone) return false;
+                
+                this.health -= amount * (2 - this.effectiveness);
+                createParticles(this.x, this.y, 5, '#FF3EB5');
+                
+                // Mostrar texto de daño
+                this.showDamageText(amount);
+                
+                return this.health <= 0;
+            }
+
+            showDamageText(amount) {
+                const damageText = {
+                    x: this.x,
+                    y: this.y,
+                    text: `-${Math.round(amount)}`,
+                    life: 60,
+                    maxLife: 60
+                };
+                
+                particles.push(damageText);
+            }
+        }
+
+        class Semiology {
+            constructor(type, x, y, config) {
+                this.type = type;
+                this.x = x;
+                this.y = y;
+                this.config = config;
+                this.radius = 20;
+                this.color = config.color;
+                this.speed = 0.8;
+                this.health = 60; // Aumentada la salud para hacerlo más desafiante
+                this.maxHealth = 60;
+                this.attackCooldown = 0;
+                this.patrolTimer = 90;
+                this.targetX = x;
+                this.targetY = y;
+                this.aggroRange = 150;
+                this.attackRange = 80;
+                this.attackCooldownTime = 120;
+            }
+
+            draw() {
+                // Dibujar barra de salud
+                const healthPercent = this.health / this.maxHealth;
+                const barWidth = 40;
+                const barHeight = 4;
+                
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(this.x - barWidth/2, this.y - this.radius - 15, barWidth, barHeight);
+                
+                ctx.fillStyle = healthPercent > 0.5 ? '#00FF00' : healthPercent > 0.25 ? '#FFFF00' : '#FF0000';
+                ctx.fillRect(this.x - barWidth/2, this.y - this.radius - 15, barWidth * healthPercent, barHeight);
+                
+                // Dibujar semiología
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = '#0A0A0A';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(this.config.name.charAt(0), this.x, this.y);
+                
+                ctx.fillStyle = this.color;
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(this.config.name, this.x, this.y - this.radius - 25);
+            }
+
+            update() {
+                if (!player) return;
+
+                const playerInSafeZone = player.isInSafeZone;
+                
+                if (playerInSafeZone) {
+                    this.patrolAwayFromPlayer();
+                } else {
+                    this.followPlayer();
+                }
+
+                this.x = Math.max(this.radius, Math.min(gameCanvas.width - this.radius, this.x));
+                this.y = Math.max(this.radius, Math.min(gameCanvas.height - this.radius, this.y));
+
+                if (!playerInSafeZone) {
+                    const playerDx = player.x - this.x;
+                    const playerDy = player.y - this.y;
+                    const playerDistance = Math.sqrt(playerDx * playerDx + playerDy * playerDy);
+
+                    if (playerDistance < this.attackRange && this.attackCooldown <= 0) {
+                        player.addDebuff(this);
+                        this.attackCooldown = this.attackCooldownTime;
+                    }
+                }
+
+                if (this.attackCooldown > 0) {
+                    this.attackCooldown--;
+                }
+            }
+
+            followPlayer() {
+                const dx = player.x - this.x;
+                const dy = player.y - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < this.aggroRange && distance > this.attackRange) {
+                    this.x += (dx / distance) * this.speed;
+                    this.y += (dy / distance) * this.speed;
+                } else if (distance >= this.aggroRange) {
+                    this.patrolRandomly();
+                }
+            }
+
+            patrolAwayFromPlayer() {
+                this.patrolTimer--;
+                
+                if (this.patrolTimer <= 0 || 
+                    Math.abs(this.x - this.targetX) < 5 && Math.abs(this.y - this.targetY) < 5) {
+                    let safePositionFound = false;
+                    let attempts = 0;
+                    
+                    while (!safePositionFound && attempts < 10) {
+                        this.targetX = 100 + Math.random() * 700;
+                        this.targetY = 100 + Math.random() * 450;
+                        
+                        const dx = player.x - this.targetX;
+                        const dy = player.y - this.targetY;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance > 200) {
+                            safePositionFound = true;
+                        }
+                        attempts++;
+                    }
+                    this.patrolTimer = 120;
+                }
+
+                const dx = this.targetX - this.x;
+                const dy = this.targetY - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance > 0) {
+                    this.x += (dx / distance) * this.speed;
+                    this.y += (dy / distance) * this.speed;
+                }
+            }
+
+            patrolRandomly() {
+                this.patrolTimer--;
+                
+                if (this.patrolTimer <= 0 || 
+                    Math.abs(this.x - this.targetX) < 5 && Math.abs(this.y - this.targetY) < 5) {
+                    this.targetX = 100 + Math.random() * 700;
+                    this.targetY = 100 + Math.random() * 450;
+                    this.patrolTimer = 120;
+                }
+
+                const dx = this.targetX - this.x;
+                const dy = this.targetY - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance > 0) {
+                    this.x += (dx / distance) * this.speed * 0.7;
+                    this.y += (dy / distance) * this.speed * 0.7;
+                }
+            }
+
+            takeDamage(amount) {
+                this.health -= amount;
+                createParticles(this.x, this.y, 5, '#FF3EB5');
+                
+                // Mostrar texto de daño en la semiología
+                const damageText = {
+                    x: this.x,
+                    y: this.y,
+                    text: `-${amount}`,
+                    life: 60,
+                    maxLife: 60
+                };
+                particles.push(damageText);
+                
+                return this.health <= 0;
+            }
+        }
+
+        // =============================================
+        // SISTEMA DE PARTÍCULAS Y EFECTOS
+        // =============================================
+
+        function createParticles(x, y, count, color) {
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    velocityX: (Math.random() - 0.5) * 4,
+                    velocityY: (Math.random() - 0.5) * 4,
+                    life: 30,
+                    maxLife: 30,
+                    color: color,
+                    size: Math.random() * 3 + 1
+                });
+            }
+        }
+
+        function updateParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                
+                if (p.text) {
+                    // Es texto de daño
+                    p.y -= 1;
+                    p.life--;
+                    
+                    if (p.life <= 0) {
+                        particles.splice(i, 1);
+                    }
+                } else {
+                    // Es partícula normal
+                    p.x += p.velocityX;
+                    p.y += p.velocityY;
+                    p.life--;
+
+                    if (p.life <= 0) {
+                        particles.splice(i, 1);
+                    }
+                }
+            }
+        }
+
+        function drawParticles() {
+            particles.forEach(p => {
+                if (p.text) {
+                    // Dibujar texto de daño
+                    const alpha = p.life / p.maxLife;
+                    ctx.fillStyle = `rgba(255, 62, 181, ${alpha})`;
+                    ctx.font = 'bold 16px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(p.text, p.x, p.y);
+                } else {
+                    // Dibujar partícula normal
+                    const alpha = p.life / p.maxLife;
+                    ctx.fillStyle = p.color.replace(')', `, ${alpha})`).replace('rgb', 'rgba');
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+        }
+
+        // =============================================
+        // INTERFAZ DE USUARIO
+        // =============================================
+
+        function showAbilityMessage(message) {
+            const abilityMessage = document.getElementById('ability-message');
+            abilityMessage.textContent = message;
+            abilityMessage.style.display = 'block';
+            
+            setTimeout(() => {
+                abilityMessage.style.display = 'none';
+            }, 3000);
+        }
+
+        function updateHUD() {
+            if (!player) return;
+            
+            const healthFill = document.getElementById('player-health');
+            const healthText = document.getElementById('health-text');
+            const healthPercent = player.health / player.maxHealth;
+            
+            healthFill.style.width = `${healthPercent * 100}%`;
+            healthText.textContent = `SALUD CEREBRAL: ${Math.round(player.health)}%`;
+
+            debuffList.innerHTML = '';
+            player.activeDebuffs.forEach(debuff => {
+                const debuffElement = document.createElement('div');
+                debuffElement.className = 'debuff-item';
+                const timeLeft = Math.ceil(debuff.duration/60);
+                debuffElement.textContent = `${debuff.name} (${timeLeft}s)`;
+                debuffList.appendChild(debuffElement);
+            });
+
+            // Actualizar descripciones de habilidades
+            updateSkillDescriptions();
+
+            for (let i = 1; i <= 3; i++) {
+                const skillBtn = document.getElementById(`skill-${i}`);
+                const compensation = player.compensations[i.toString()];
+                let cooldownOverlay = skillBtn.querySelector('.cooldown-overlay');
+                
+                if (!cooldownOverlay) {
+                    cooldownOverlay = document.createElement('div');
+                    cooldownOverlay.className = 'cooldown-overlay';
+                    skillBtn.appendChild(cooldownOverlay);
+                }
+
+                if (compensation.currentCooldown > 0) {
+                    skillBtn.classList.add('cooldown');
+                    const cooldownPercent = (compensation.currentCooldown / compensation.cooldown) * 100;
+                    cooldownOverlay.style.height = `${cooldownPercent}%`;
+                } else {
+                    skillBtn.classList.remove('cooldown');
+                    cooldownOverlay.style.height = '0%';
+                }
+            }
+
+            document.getElementById('current-hero-name').textContent = 
+                player.heroType === 'cerebelo' ? 'CEREBELO' : 
+                player.heroType === 'limbico' ? 'SISTEMA LÍMBICO' : 'LÓBULOS CEREBRALES';
+            
+            // Actualizar descripción del héroe según zona
+            updateHeroDescription();
+            
+            heroEducational.textContent = `SEMIOLOGÍAS NEUTRALIZADAS: ${neutralizedSemiologies.size}/${VICTORY_CONDITION}`;
+        }
+
+        function updateSkillDescriptions() {
+            const skill1 = document.querySelector('#skill-1 .skill-name');
+            const skill2 = document.querySelector('#skill-2 .skill-name');
+            const skill3 = document.querySelector('#skill-3 .skill-name');
+            
+            skill1.textContent = 'DEFENSA';
+            skill2.textContent = 'VELOCIDAD';
+            skill3.textContent = 'ENERGÍA';
+            
+            // Agregar tooltips con descripciones
+            skill1.title = 'Reduce el daño de semiologías activas.';
+            skill2.title = 'Aumenta la movilización entre zonas cerebrales.';
+            skill3.title = 'Restaura habilidades defensivas.';
+        }
+
+        function updateHeroDescription() {
+            if (!player) return;
+            
+            if (player.isInSafeZone && player.currentZone) {
+                const zoneMessages = {
+                    'cerebelo': {
+                        'motora': 'ZONA SEGURA – COORDINACIÓN NEURAL',
+                        'cognitiva': 'MOVIMIENTO A ZONA DE REHABILITACIÓN',
+                        'emocional': 'MOVIMIENTO A ZONA DE REHABILITACIÓN'
+                    },
+                    'limbico': {
+                        'motora': 'MOVIMIENTO A ZONA DE REHABILITACIÓN',
+                        'cognitiva': 'MOVIMIENTO A ZONA DE REHABILITACIÓN',
+                        'emocional': 'ZONA SEGURA – ESTABILIDAD EMOCIONAL'
+                    },
+                    'lobulos': {
+                        'motora': 'MOVIMIENTO A ZONA DE REHABILITACIÓN',
+                        'cognitiva': 'ZONA COGNITIVA – ESTABILIDAD ACTIVA',
+                        'emocional': 'MOVIMIENTO A ZONA DE REHABILITACIÓN'
+                    }
+                };
+                
+                currentHeroDesc.textContent = zoneMessages[player.heroType]?.[player.currentZone] || `ZONA SEGURA - ${player.currentZone.toUpperCase()}`;
+            } else if (player.currentZone) {
+                currentHeroDesc.textContent = `EN ZONA ${player.currentZone.toUpperCase()}`;
+            } else {
+                currentHeroDesc.textContent = 'MOVIMIENTO A ZONA DE REHABILITACIÓN';
+            }
+        }
+
+        function updateEducationalPanel(heroType) {
+            const config = semiologiesConfig[heroType];
+            educationalTitle.textContent = config.title;
+            
+            // Actualizar objetivo del juego
+            const objectives = {
+                'cerebelo': 'OBJETIVO: Neutraliza 8 semiologías cerebelosas usando los mecanismos compensatorios correctos.',
+                'limbico': 'OBJETIVO: Neutraliza 8 alteraciones emocionales y cognitivas usando los mecanismos compensatorios correctos.',
+                'lobulos': 'OBJETIVO: Neutraliza 8 semiologías activas utilizando los mecanismos de reorganización cortical adecuados.'
+            };
+            gameObjective.innerHTML = `<strong>${objectives[heroType]}</strong>`;
+            
+            enemiesList.innerHTML = '';
+            
+            Object.values(config.semiologies).forEach(semiology => {
+                const enemyElement = document.createElement('div');
+                enemyElement.className = 'enemy-info';
+                enemyElement.innerHTML = `
+                    <span class="enemy-type">${semiology.name}:</span> ${semiology.desc}
+                    <div style="font-size: 0.7rem; color: #7A00FF; margin-top: 2px;">
+                        COMPENSACIÓN: ${semiology.compensation} | DAÑO: ${semiology.damage}
+                    </div>
+                `;
+                enemiesList.appendChild(enemyElement);
+            });
+        }
+
+        function drawRehabZones() {
+            const zones = [
+                { x: 200, y: 300, radius: 80, color: 'rgba(0, 229, 255, 0.1)', borderColor: '#00E5FF', name: 'MOTORA' },
+                { x: 450, y: 300, radius: 80, color: 'rgba(122, 0, 255, 0.1)', borderColor: '#7A00FF', name: 'COGNITIVA' },
+                { x: 700, y: 300, radius: 80, color: 'rgba(255, 62, 181, 0.1)', borderColor: '#FF3EB5', name: 'EMOCIONAL' }
+            ];
+
+            zones.forEach(zone => {
+                ctx.fillStyle = zone.color;
+                ctx.beginPath();
+                ctx.arc(zone.x, zone.y, zone.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Borde con color distinto para cada zona
+                ctx.strokeStyle = zone.borderColor;
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                
+                ctx.fillStyle = '#E6F7FF';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`ZONA ${zone.name}`, zone.x, zone.y);
+            });
+        }
+
+        // =============================================
+        // GESTIÓN DEL JUEGO
+        // =============================================
+
+        function initGame() {
+            player = new Player(selectedHero);
+            semiologies = [];
+            particles = [];
+            rehabEffects = [];
+            score = 0;
+            neutralizedSemiologies.clear();
+            gameRunning = true;
+
+            updateEducationalPanel(selectedHero);
+
+            const config = semiologiesConfig[selectedHero];
+            const semiologyKeys = Object.keys(config.semiologies);
+            
+            for (let i = 0; i < 8; i++) {
+                const type = semiologyKeys[i];
+                const semiologyConfig = config.semiologies[type];
+                const angle = (i / 8) * Math.PI * 2;
+                const distance = 250 + Math.random() * 100;
+                const x = gameCanvas.width / 2 + Math.cos(angle) * distance;
+                const y = gameCanvas.height / 2 + Math.sin(angle) * distance;
+                semiologies.push(new Semiology(type, x, y, semiologyConfig));
+            }
+
+            showAbilityMessage('¡USA LAS ZONAS SEGURAS PARA PROTEGERTE! LAS SEMIOLOGÍAS NO TE PUEDEN ATACAR ALLÍ.');
+            
+            gameLoop();
+        }
+
+        function gameLoop() {
+            if (!gameRunning || !player) {
+                return;
+            }
+
+            ctx.fillStyle = '#0A0A0A';
+            ctx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
+
+            drawRehabZones();
+
+            player.update();
+            player.draw();
+
+            semiologies.forEach((semiology, index) => {
+                semiology.update();
+                semiology.draw();
+            });
+
+            updateParticles();
+            drawParticles();
+
+            updateHUD();
+
+            if (neutralizedSemiologies.size >= VICTORY_CONDITION) {
+                endGame(true);
+                return;
+            }
+
+            if (player.health <= 0) {
+                endGame(false);
+                return;
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function endGame(victory) {
+            gameRunning = false;
+            
+            const endTitle = document.getElementById('end-title');
+            const scoreText = document.getElementById('score-text');
+            
+            if (victory) {
+                endTitle.textContent = '¡MISIÓN COMPLETADA!';
+                endTitle.className = 'end-title victory';
+                
+                // Mensajes de victoria específicos por región
+                const victoryMessages = {
+                    'cerebelo': {
+                        title: 'LOGRO DE APRENDIZAJE',
+                        summary: 'El CEREBELO aplicó mecanismos compensatorios efectivos para neutralizar las semiologías motoras de la arena.',
+                        reminder: 'El cerebelo ajusta los movimientos mediante propiocepción, retroalimentación sensorial y control visuomotor, lo que le permite compensar alteraciones en coordinación, precisión y equilibrio.'
+                    },
+                    'limbico': {
+                        title: 'LOGRO DE APRENDIZAJE', 
+                        summary: 'El SISTEMA LÍMBICO utilizó de forma efectiva sus mecanismos de regulación para compensar alteraciones emocionales y de la memoria.',
+                        reminder: 'El sistema límbico es clave en la gestión emocional: cuando una función falla, activa rutas alternativas para mantener la estabilidad afectiva y la memoria emocional.'
+                    },
+                    'lobulos': {
+                        title: '🎓 LOGRO DE APRENDIZAJE',
+                        summary: 'Los Lóbulos Cerebrales activaron mecanismos de reorganización y procesamiento que permitieron contrarrestar las semiologías presentadas durante el desafío.',
+                        reminder: 'La neuroplasticidad permite al cerebro adaptarse, reforzar circuitos y reorganizar funciones para responder a semiologías como las que enfrentaste en esta arena.'
+                    }
+                };
+                
+                const message = victoryMessages[selectedHero];
+                endAchievementTitle.textContent = message.title;
+                educationalSummary.textContent = message.summary;
+                endReminder.innerHTML = `<strong>RECORDATORIO</strong><br>${message.reminder}`;
+                
+            } else {
+                endTitle.textContent = '¡SOBRECARGA NEURAL!';
+                endTitle.className = 'end-title defeat';
+                educationalSummary.textContent = `Los mecanismos compensatorios del ${selectedHero === 'cerebelo' ? 'CEREBELO' : selectedHero === 'limbico' ? 'SISTEMA LÍMBICO' : 'LÓBULOS CEREBRALES'} fueron insuficientes.`;
+                endAchievementTitle.textContent = '🎓 LOGRO DE APRENDIZAJE';
+                endReminder.innerHTML = '<strong>RECORDATORIO:</strong> La neuroplasticidad permite al cerebro reorganizarse y compensar déficits mediante los mecanismos que has utilizado.';
+            }
+            
+            const efficiency = Math.round((neutralizedSemiologies.size / VICTORY_CONDITION) * 100);
+            scoreText.textContent = `EFICIENCIA NEURAL: ${efficiency}% - PUNTOS: ${score}`;
+            
+            gameScreen.classList.add('hidden');
+            endScreen.classList.remove('hidden');
+        }
+        // =============================================
+// SISTEMA DE AUDIO
+// =============================================
+
+class AudioManager {
+    constructor() {
+        this.backgroundMusic = document.getElementById('background-music');
+        this.skillSound = document.getElementById('skill-sound');
+        this.damageSound = document.getElementById('damage-sound');
+        this.victorySound = document.getElementById('victory-sound');
+        
+        this.musicEnabled = true;
+        this.soundEnabled = true;
+        this.musicVolume = 0.3; // 30% volumen para música de fondo
+        this.soundVolume = 0.7; // 70% volumen para efectos
+        
+        this.initAudioControls();
+        this.setupAudioEvents();
+    }
+
+    initAudioControls() {
+        const musicToggle = document.getElementById('music-toggle');
+        const soundToggle = document.getElementById('sound-toggle');
+
+        // Estado inicial
+        this.updateButtonStates();
+
+        musicToggle.addEventListener('click', () => {
+            this.toggleMusic();
+            this.updateButtonStates();
+        });
+
+        soundToggle.addEventListener('click', () => {
+            this.toggleSound();
+            this.updateButtonStates();
+        });
+    }
+
+    setupAudioEvents() {
+        // Configurar volúmenes iniciales
+        this.backgroundMusic.volume = this.musicVolume;
+        this.skillSound.volume = this.soundVolume;
+        this.damageSound.volume = this.soundVolume;
+        this.victorySound.volume = this.soundVolume;
+
+        // Reproducir música cuando el usuario interactúe por primera vez
+        document.addEventListener('click', this.startMusic.bind(this), { once: true });
+    }
+
+    startMusic() {
+        if (this.musicEnabled) {
+            this.backgroundMusic.play().catch(e => {
+                console.log('Audio requiere interacción del usuario:', e);
+            });
+        }
+    }
+
+    toggleMusic() {
+        this.musicEnabled = !this.musicEnabled;
+        if (this.musicEnabled) {
+            this.backgroundMusic.play().catch(e => console.log('Error reproduciendo música:', e));
+        } else {
+            this.backgroundMusic.pause();
+        }
+    }
+
+    toggleSound() {
+        this.soundEnabled = !this.soundEnabled;
+    }
+
+    updateButtonStates() {
+        const musicToggle = document.getElementById('music-toggle');
+        const soundToggle = document.getElementById('sound-toggle');
+
+        musicToggle.textContent = this.musicEnabled ? '🎵' : '🔇';
+        musicToggle.style.color = this.musicEnabled ? 'var(--neon-azul)' : 'var(--neon-rosa)';
+
+        soundToggle.textContent = this.soundEnabled ? '🔊' : '🔇';
+        soundToggle.style.color = this.soundEnabled ? 'var(--neon-azul)' : 'var(--neon-rosa)';
+    }
+
+    playSkillSound() {
+        if (this.soundEnabled && this.skillSound) {
+            this.skillSound.currentTime = 0;
+            this.skillSound.play().catch(e => console.log('Error efecto habilidad:', e));
+        }
+    }
+
+    playDamageSound() {
+        if (this.soundEnabled && this.damageSound) {
+            this.damageSound.currentTime = 0;
+            this.damageSound.play().catch(e => console.log('Error efecto daño:', e));
+        }
+    }
+
+    playVictorySound() {
+        if (this.soundEnabled && this.victorySound) {
+            this.victorySound.currentTime = 0;
+            this.victorySound.play().catch(e => console.log('Error efecto victoria:', e));
+        }
+    }
+
+    // Cambiar música según pantalla
+    playMenuMusic() {
+        if (this.musicEnabled) {
+            // Podrías tener música diferente para menú y juego
+            this.backgroundMusic.volume = this.musicVolume;
+        }
+    }
+
+    playGameMusic() {
+        if (this.musicEnabled) {
+            this.backgroundMusic.volume = this.musicVolume;
+        }
+    }
+}
+
+// Inicializar sistema de audio
+const audioManager = new AudioManager();
+
+        // =============================================
+        // MANEJADORES DE EVENTOS
+        // =============================================
+
+        startBtn.addEventListener('click', () => {
+            startScreen.classList.add('hidden');
+            heroSelectScreen.classList.remove('hidden');
+        });
+
+        document.querySelectorAll('.hero-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.hero-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedHero = card.dataset.hero;
+            });
+        });
+
+        // En startBtn.addEventListener:
+startBtn.addEventListener('click', () => {
+    audioManager.playGameMusic();});
+
+    restartBtn.addEventListener('click', () => {
+    audioManager.playMenuMusic();
+    });
+        selectBtn.addEventListener('click', () => {
+            if (selectedHero) {
+                heroSelectScreen.classList.add('hidden');
+                gameScreen.classList.remove('hidden');
+                initGame();
+            } else {
+                alert('¡SELECCIONA UNA REGIÓN CEREBRAL PARA COMENZAR!');
+            }
+        });
+
+        restartBtn.addEventListener('click', () => {
+            endScreen.classList.add('hidden');
+            heroSelectScreen.classList.remove('hidden');
+        });
+
+        window.addEventListener('keydown', (e) => {
+            keys[e.key.toLowerCase()] = true;
+            
+            if (['1', '2', '3'].includes(e.key) && player) {
+                player.useCompensation(e.key);
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            keys[e.key.toLowerCase()] = false;
+        });
+
+        function handleMovement() {
+            if (!player) return;
+
+            let moveX = 0;
+            let moveY = 0;
+
+            if (keys['w']) moveY = -player.speed;
+            if (keys['s']) moveY = player.speed;
+            if (keys['a']) moveX = -player.speed;
+            if (keys['d']) moveX = player.speed;
+
+            if (moveX !== 0 && moveY !== 0) {
+                moveX *= 0.707;
+                moveY *= 0.707;
+            }
+
+            player.x += moveX;
+            player.y += moveY;
+
+            player.x = Math.max(player.radius, Math.min(gameCanvas.width - player.radius, player.x));
+            player.y = Math.max(player.radius, Math.min(gameCanvas.height - player.radius, player.y));
+        }
+
+        document.querySelectorAll('.skill-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (player) {
+                    player.useCompensation(btn.dataset.key);
+                }
+            });
+        });
+
+        document.querySelectorAll('.rehab-zone').forEach(zone => {
+            zone.addEventListener('click', () => {
+                if (player) {
+                    const zoneType = zone.id.replace('zone-', '');
+                    player.health = Math.min(player.maxHealth, player.health + 15);
+                    createParticles(player.x, player.y, 12, '#00E5FF');
+                    showAbilityMessage(`ZONA ${zoneType.toUpperCase()} - SALUD MEJORADA +15%`);
+                }
+            });
+        });
+
+        // =============================================
+        // INICIALIZACIÓN
+        // =============================================
+
+        // Crear partículas de fondo
+        function createBackgroundParticles() {
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle-bg';
+                particle.style.width = `${Math.random() * 6 + 2}px`;
+                particle.style.height = particle.style.width;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.animationDuration = `${Math.random() * 30 + 20}s`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                
+                const colors = ['#00E5FF', '#7A00FF', '#FF3EB5'];
+                particle.style.background = `radial-gradient(circle, ${colors[Math.floor(Math.random() * colors.length)]}, transparent)`;
+                
+                backgroundParticles.appendChild(particle);
+            }
+        }
+
+        createBackgroundParticles();
+
+        // Bucle de movimiento
+        setInterval(handleMovement, 1000/60);
+
+        // Selección automática inicial
+        document.querySelector('.hero-card').click();
+    </script>
+</body>
+</html>
